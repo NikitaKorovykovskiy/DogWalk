@@ -1,7 +1,6 @@
-from typing import Any, Iterable
+from typing import Any
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 
@@ -39,9 +38,16 @@ class Pet(models.Model):
         ("OTH", "Other"),
     ]
 
-    name = models.CharField(max_length=100)
-    breed = models.CharField(max_length=3, choices=BREED_CHOICES, default="OTH")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="pets")
+    name = models.CharField(max_length=100, verbose_name="Кличка животного")
+    breed = models.CharField(
+        max_length=3, choices=BREED_CHOICES, default="OTH", verbose_name="Порода"
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="pets",
+        verbose_name="Хозяин животного",
+    )
 
     class Meta:
         verbose_name = "Питомец"
@@ -52,7 +58,16 @@ class Pet(models.Model):
 
 
 class Walker(models.Model):
-    name = models.CharField(max_length=100)
+    name_walker = [
+        ("Peter", "Peter"),
+        ("Anton", "Anton"),
+    ]
+    name = models.CharField(
+        max_length=5,
+        choices=name_walker,
+        default="Peter",
+        verbose_name="Имя исполнителя",
+    )
 
     class Meta:
         verbose_name = "Исполнитель"
@@ -63,35 +78,27 @@ class Walker(models.Model):
 
 
 class WalkOrder(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="walk_orders")
-    pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name="walk_orders")
-    walker = models.ForeignKey(Walker, on_delete=models.CASCADE, related_name="walk_orders")
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
-    comment = models.TextField()
-
-    def clean(self) -> None:
-        if self.start_time.minute not in [0, 30]:
-            raise ValidationError(
-                "Прогулки должны начинаться в начале часа или в середине часа."
-            )
-
-        if self.end_time > self.start_time + timezone.timedelta(minutes=30):
-            raise ValidationError(
-                "Прогулка не может длиться болтше чем через 30 минут."
-            )
-
-        if self.start_time < 7 or self.start_time > 23:
-            raise ValidationError(
-                "Прогулки не могут начинаться раньше 7 утра или после 11 вечера."
-            )
-
-        if WalkOrder.objects.filter(
-            start_time=self.start_time, walker=self.walker
-        ).exists():
-            raise ValidationError(
-                f"{self.walker.name} на это время уже назначена прогулка."
-            )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="walk_orders",
+        verbose_name="Заказчик",
+    )
+    pet = models.ForeignKey(
+        Pet,
+        on_delete=models.CASCADE,
+        related_name="walk_orders",
+        verbose_name="Кличка животного",
+    )
+    walker = models.ForeignKey(
+        Walker,
+        on_delete=models.CASCADE,
+        related_name="walk_orders",
+        verbose_name="Исполнитель",
+    )
+    start_time = models.DateTimeField(verbose_name="Время начала прогулки")
+    end_time = models.DateTimeField(verbose_name="Время окончания прогулки")
+    comment = models.TextField(verbose_name="Комментарий")
 
     def save(self, *args: tuple, **kwargs: dict[str, Any]) -> None:
         self.clean()
