@@ -5,8 +5,8 @@ from dw.models import Pet, User, WalkOrder, Walker
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    pass
-
+    list_display = ("first_name", "phone")
+    fields = ("first_name", "last_name", "phone")
 
 @admin.register(Pet)
 class PetAdmin(admin.ModelAdmin):
@@ -20,5 +20,6 @@ class WalkerAdmin(admin.ModelAdmin):
 
 @admin.register(WalkOrder)
 class WalkOrderAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("walker", "pet", "user", "start_time")
+    fields = ("user", "pet", "walker", "start_time", "end_time", "comment")
 
