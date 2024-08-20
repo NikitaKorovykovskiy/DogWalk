@@ -1,6 +1,6 @@
 
 from app.hash_password import hash_password
-from app.models import Roles
+from app.models1 import Roles
 
 
 USER_DATA = [

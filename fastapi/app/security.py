@@ -1,6 +1,6 @@
 from fastapi.security import OAuth2PasswordBearer
 from app.db import USER_DATA
-from app.models import Roles, User, UserResponse
+from app.models1 import Roles, User, UserResponse
 import jwt
 from fastapi import FastAPI, Depends, HTTPException, status
 from app import config

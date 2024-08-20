@@ -2,7 +2,7 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 
 from app.db import USER_DATA
-from app.models import Roles, UserRequest
+from app.models1 import Roles, UserRequest
 from app.security import create_jwt_token, get_current_active_user, get_current_user
 from app.services import get_user, auth_user
 

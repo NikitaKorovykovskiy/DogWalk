@@ -1,6 +1,6 @@
 from app.db import USER_DATA
 from app.hash_password import verify_password
-from app.models import User
+from app.models1 import User
 
 
 def get_user(username: str) -> User|None:
