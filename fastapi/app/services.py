@@ -4,9 +4,14 @@ from app.models import User
 
 
 def get_user(username: str) -> User|None:
-    if username in USER_DATA:
-        return User(**USER_DATA[username])
+    for user in USER_DATA:
+        if username != user["username"]:
+            continue
+        else:
+            return User(**user)
     return None
+    
+    
 
 def auth_user(username: str, password: str) -> User|None:
     user = get_user(username)

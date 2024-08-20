@@ -1,6 +1,5 @@
 
-
-from app import hash_password
+from app.hash_password import hash_password
 from app.models import Roles
 
 

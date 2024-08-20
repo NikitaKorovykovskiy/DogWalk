@@ -10,7 +10,7 @@ class Roles(Enum):
 class User(BaseModel):
     username: str
     password: str
-    roles: str|None = None
+    role: Roles
 
 class UserRequest(BaseModel):
     username: str
