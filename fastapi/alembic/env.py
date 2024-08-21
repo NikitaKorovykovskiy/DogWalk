@@ -2,30 +2,23 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from os import environ
+
 from alembic import context
-
-from app.models import user
-
+from app.models.user import metadata
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-section = config.config_ini_section
-config.set_section_option(section, "DB_USER", environ.get("DB_USER", "backend"))
-config.set_section_option(section, "DB_PASS", environ.get("DB_PASS", "postgres"))
-config.set_section_option(section, "DB_NAME", environ.get("DB_NAME", "backend"))
-config.set_section_option(section, "DB_HOST", environ.get("DB_HOST", "5432"))
-
-fileConfig(config.config_file_name)
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = [user.metadata,]
+target_metadata = metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
