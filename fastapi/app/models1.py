@@ -19,3 +19,8 @@ class UserRequest(BaseModel):
 class UserResponse(BaseModel):
     username: str
     roles: str
+
+class CustomException(BaseModel):
+    status_code: int
+    er_message: str
+    er_details: str
