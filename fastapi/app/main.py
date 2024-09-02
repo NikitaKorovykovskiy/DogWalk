@@ -1,29 +1,35 @@
-
-from fastapi import FastAPI, Depends, HTTPException, status
-
-from app.db import USER_DATA
-from app.models1 import Roles, UserRequest
-from app.security import create_jwt_token, get_current_active_user, get_current_user
-from app.services import get_user, auth_user
-
+from fastapi import FastAPI, Depends
+import requests
 
 app = FastAPI()
 
-@app.post("/login")
-def login(user_in: UserRequest):
-    authenticated_user = auth_user(user_in.username, user_in.password)
-    if authenticated_user is None:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-    return {
-        "access_token": create_jwt_token(authenticated_user),
-        "token_type": "bearer"
-    }
+# Внешний API URL (для демонстрации процесса обратимся сами к себе, но тут должен быть реальный)
+EXTERNAL_API_URL = "https://catfact.ninja/fact"
 
-# Доступ любому пользователю
-@app.get("/user")
-def read_user_data(auth_user: str = Depends(get_current_user)):
-    return {"message": "Hello, user!", "user": auth_user.username}
 
-@app.get("/admin")
-def read_user_admin_data(auth_user: str = Depends(get_current_active_user)):
-    return {"message": "Welcome, admin!", "user": auth_user.username}
+# функция для получения данных из внешнего API
+def fetch_data_from_api():
+    response = requests.get(EXTERNAL_API_URL)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+
+
+# функция для обработки данных
+def process_data(data):
+    # как-то логика обработки данных
+    new_data = {}
+    for key, value in data.items():
+        new_data[key.upper()] = value.upper()
+    return new_data
+
+
+# роут, который извлекает и обрабатывает данные от внешнего API
+@app.get("/data/")
+async def get_and_process_data():
+    data: dict = fetch_data_from_api()
+    if data:
+        return process_data(data)
+    else:
+        return {"error": "Failed to fetch data from the external API"}
